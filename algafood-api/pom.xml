@@ -149,12 +149,12 @@
 			<artifactId>springfox-swagger2</artifactId>
 			<version>${spring.fox.version}</version>
 			<!-- conflito com Spring HATEOAS -->
-<!-- 			<exclusions> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>org.springframework.plugin</groupId> -->
-<!-- 					<artifactId>spring-plugin-core</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 			</exclusions> -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.plugin</groupId>
+					<artifactId>spring-plugin-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		
 		<!-- gera um HTML usando a definição -->
@@ -168,17 +168,17 @@
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-bean-validators</artifactId>
 			<version>${spring.fox.version}</version>
-<!-- 			<exclusions> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>org.springframework.plugin</groupId> -->
-<!-- 					<artifactId>spring-plugin-core</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 			</exclusions> -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.plugin</groupId>
+					<artifactId>spring-plugin-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework.boot</groupId> -->
-<!-- 			<artifactId>spring-boot-starter-hateoas</artifactId> -->
-<!-- 		</dependency> -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-hateoas</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
