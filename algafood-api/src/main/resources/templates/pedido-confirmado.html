@@ -1,0 +1,40 @@
+<html>
+<body style="font: 14px Arial, Helvetica, sans-serif;>
+
+	<div style="max-width: 850px;">
+		<h1 style="color: red; font-size: 26px; float: left; width: 65%;">Pedido confirmado!</h1>
+		<img src="https://algafood-douglas.s3.amazonaws.com/catalogo/0d27b65c-c668-4f60-9bd0-d4243fbcd55a__Capturar.PNG" alt="Ifood" style="height: 80px; width: 160px; border-radius: 20%">
+		<p>${pedido.cliente.nome}, seu pedido foi confirmado pelo restaurante e já está sendo preparado.</p>
+	</div>
+	
+	<h2 style="font-size: 20px">${pedido.restaurante.nome}</h2>
+	
+	<table width="100%" border="0" cellspacing="0" cellpadding="0"
+			style="max-width: 400px; color: #6F6F6F">
+		<#list pedido.itens as item>
+			<tr>
+				<td style="padding: 10px 0">${item.quantidade}x ${item.produto.nome}</td>
+				<td style="width: 30px">${item.precoTotal?string.currency}</td>
+			</tr>
+		</#list>
+
+		<tr>
+			<td style="padding: 10px 0">Frete</td>
+			<td>${pedido.taxaFrete?string.currency}</td>
+		</tr>
+		<tr style="font-weight: bold">
+			<td style="padding: 10px 0">Total</td>
+			<td>${pedido.valorTotal?string.currency}</td>
+		</tr>
+		<tr style="font-weight: bold">
+			<td style="padding: 10px 0">
+				<img src="https://algafood-douglas.s3.amazonaws.com/catalogo/c22f4617-c269-43d2-ab69-0a7cdc2c5565__d4e40903-1890-4b94-8f90-c887fdb5ec7e.png" 
+					alt="Ifood" style="height: 200px; width: 300px; border-radius: 20%">
+			</td>
+		</tr>
+	</table>
+	
+	<h2 style="font-size: 20px">Forma de pagamento</h2>
+	<p style="color: #6F6F6F">${pedido.formaPagamento.descricao}</p>
+</body>
+</html>

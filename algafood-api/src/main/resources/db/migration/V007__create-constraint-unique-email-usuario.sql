@@ -1,0 +1,1 @@
+alter table usuario add UNIQUE KEY email_uk (email);
