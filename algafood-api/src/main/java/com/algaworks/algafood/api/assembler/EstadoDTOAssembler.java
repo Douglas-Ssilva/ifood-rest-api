@@ -1,28 +1,41 @@
 package com.algaworks.algafood.api.assembler;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
+import com.algaworks.algafood.api.AlgaLinks;
+import com.algaworks.algafood.api.controller.EstadoController;
 import com.algaworks.algafood.api.model.EstadoDTO;
 import com.algaworks.algafood.domain.model.Estado;
 
 
 @Component
-public class EstadoDTOAssembler {
+public class EstadoDTOAssembler extends RepresentationModelAssemblerSupport<Estado, EstadoDTO>{
 	
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	public EstadoDTO toDTO(Estado estado) {
-		return this.modelMapper.map(estado, EstadoDTO.class);
+	@Autowired
+	private AlgaLinks algaLinks;
+	
+	public EstadoDTOAssembler() {
+		super(EstadoController.class, EstadoDTO.class);
 	}
 	
-	public List<EstadoDTO> toCollectionDTO(List<Estado> estados) {
-		return estados.stream().map(this::toDTO).collect(Collectors.toList());
+	@Override
+	public EstadoDTO toModel(Estado estado) {
+		var estadoDTO = createModelWithId(estado.getId(), estado);
+		this.modelMapper.map(estado, estadoDTO);
+		estadoDTO.add(algaLinks.linkToEstados("estados"));
+		return estadoDTO;
 	}
-
+	
+	@Override
+	public CollectionModel<EstadoDTO> toCollectionModel(Iterable<? extends Estado> entities) {
+		return super.toCollectionModel(entities).add(algaLinks.linkToEstados());
+	}
+	
 }

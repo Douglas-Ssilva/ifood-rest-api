@@ -83,6 +83,7 @@ public class CadastroRestauranteService {
 	public void desativar(Long id) {
 		var restaurante = buscar(id);
 		restaurante.desativar();
+		restaurante.fechar();
 	}
 	
 	@Transactional
@@ -94,7 +95,6 @@ public class CadastroRestauranteService {
 	public void desassociarFormaPagamento(Long restauranteId, Long formaPagamentoId) {
 		var restaurante = buscar(restauranteId);
 		var formaPagamento = cadastroFormaPagamentoService.findById(formaPagamentoId);
-		
 		restaurante.desassociarFormaPagamento(formaPagamento);
 	}
 

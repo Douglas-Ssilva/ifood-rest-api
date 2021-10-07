@@ -123,5 +123,21 @@ public class Restaurante {
 	public boolean naoAceitaFormaPagamento(FormaPagamento formaPagamento) {
 	    return !aceitaFormaPagamento(formaPagamento);
 	}
+	
+	public boolean podeSerAtivado() {
+		return !podeSerDesativado();
+	}
+
+	public boolean podeSerDesativado() {
+		return getAtivo();
+	}
+	
+	public boolean podeSerFechado() {
+		return podeSerDesativado() && getAberto();
+	}
+	
+	public boolean podeSerAberto() {
+		return podeSerDesativado() && !podeSerFechado();
+	}
 
 }

@@ -1,10 +1,9 @@
 package com.algaworks.algafood.api.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,17 +43,16 @@ public class CidadeController implements CidadeControllerOpenApi {
 	@Autowired
 	private CidadeInputDTODisassembler cidadeDTODisassembler;
 	
-	
 	@Override
 	@GetMapping
-	public List<CidadeDTO> findAll() {
-		return cidadeDTOAssembler.toCollectionDTO(cidadeRepository.findAllJoinFetch());
+	public CollectionModel<CidadeDTO> findAll() {
+		return cidadeDTOAssembler.toCollectionModel(cidadeRepository.findAllJoinFetch());
 	}
 	
 	@Override
 	@GetMapping("/{cidadeId}")
 	public CidadeDTO findById(@PathVariable Long cidadeId) {
-		return cidadeDTOAssembler.toDTO(cadastroCidadeService.buscar(cidadeId));
+		return cidadeDTOAssembler.toModel(cadastroCidadeService.buscar(cidadeId));
 	}
 	
 	@Override
@@ -63,7 +61,7 @@ public class CidadeController implements CidadeControllerOpenApi {
 	public CidadeDTO save(@RequestBody @Valid CidadeInputDTO cidadeInputDTO) {
 		try {
 			var cidade = cidadeDTODisassembler.toDomainObject(cidadeInputDTO);
-			var dto = cidadeDTOAssembler.toDTO(cadastroCidadeService.save(cidade));
+			var dto = cidadeDTOAssembler.toModel(cadastroCidadeService.save(cidade));
 			ResourceUriHelper.addLocationInResponse(dto.getId());
 			return dto;
 		} catch (EstadoNotFoundException e) {
@@ -77,7 +75,7 @@ public class CidadeController implements CidadeControllerOpenApi {
 		var cidadeBD = cadastroCidadeService.buscar(cidadeId);
 		cidadeDTODisassembler.copyProperties(cidadeInputDTO, cidadeBD);
 		try {
-			return cidadeDTOAssembler.toDTO(cadastroCidadeService.save(cidadeBD));
+			return cidadeDTOAssembler.toModel(cadastroCidadeService.save(cidadeBD));
 		} catch (EstadoNotFoundException e) {
 			throw new NegocioException(e.getMessage(), e);
 		}

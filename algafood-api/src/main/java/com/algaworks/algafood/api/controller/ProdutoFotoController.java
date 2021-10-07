@@ -63,14 +63,14 @@ public class ProdutoFotoController implements ProdutoFotoControllerOpenApi {
 		fotoProduto.setLength(file.getSize());
 		fotoProduto.setNome(file.getOriginalFilename());
 		fotoProduto.setProduto(produto);
-		return fotoProdutoDTOAssembler.toDTO(fotoService.save(fotoProduto, produtoInput.getArquivo().getInputStream()));
+		return fotoProdutoDTOAssembler.toModel(fotoService.save(fotoProduto, produtoInput.getArquivo().getInputStream()));
 	}
 	
 	@Override
 	@GetMapping
 	public FotoProdutoDTO buscarFoto(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
 		var fotoProduto = fotoService.findFotoProdutoByRestauranteEProduto(produtoId, restauranteId);
-		return fotoProdutoDTOAssembler.toDTO(fotoProduto);
+		return fotoProdutoDTOAssembler.toModel(fotoProduto);
 	}
 	
 	/**

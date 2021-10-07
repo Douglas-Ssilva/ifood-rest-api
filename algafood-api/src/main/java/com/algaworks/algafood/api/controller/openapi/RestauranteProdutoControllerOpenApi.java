@@ -1,6 +1,6 @@
 package com.algaworks.algafood.api.controller.openapi;
 
-import java.util.List;
+import org.springframework.hateoas.CollectionModel;
 
 import com.algaworks.algafood.api.exceptionhandler.Problem;
 import com.algaworks.algafood.api.model.ProdutoDTO;
@@ -20,8 +20,8 @@ public interface RestauranteProdutoControllerOpenApi {
 		@ApiResponse(code = 404, message = "Recurso não encontrado", response = Problem.class),
 		@ApiResponse(code = 400, message = "ID com formato inválido", response = Problem.class)
 	})
-	List<ProdutoDTO> findAll(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId, 
-			@ApiParam(value = "Indica se é para buscar somente restaurantes ativos ou todos", example = "false", defaultValue = "false") boolean buscarTodos);
+	CollectionModel<ProdutoDTO> findAll(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId, 
+			@ApiParam(value = "Indica se é para buscar somente restaurantes ativos ou todos", example = "false", defaultValue = "false") Boolean buscarTodos);
 	
 	@ApiOperation("Busca um produto de um restaurante")
 	@ApiResponses({

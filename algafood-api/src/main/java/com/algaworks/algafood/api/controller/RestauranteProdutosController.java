@@ -1,10 +1,11 @@
 package com.algaworks.algafood.api.controller;
 
-import java.util.List;
+import java.util.Objects;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,17 +44,18 @@ public class RestauranteProdutosController implements RestauranteProdutoControll
 	
 	@Override
 	@GetMapping//desenvolvimento:8080/restaurantes/1/produtos?buscarTodos=true
-	public List<ProdutoDTO> findAll(@PathVariable Long restauranteId, @RequestParam(required = false) boolean buscarTodos) {
+	public CollectionModel<ProdutoDTO> findAll(@PathVariable Long restauranteId, @RequestParam(required = false) Boolean buscarTodos) {
 		var restaurante = cadastroRestauranteService.buscar(restauranteId);
-	 	var produtos = buscarTodos ? restaurante.getProdutos() : cadastroProdutoService.findByProdutosAtivos(restaurante);
-		return produtoDTOAssembler.toCollectionDTO(produtos);
+	 	var produtos = Objects.nonNull(buscarTodos) && buscarTodos.booleanValue() ? restaurante.getProdutos() : cadastroProdutoService.findByProdutosAtivos(restaurante);
+		var dtos = produtoDTOAssembler.toCollectionModel(produtos, restauranteId);
+		return dtos;
 	}
 	
 	@Override
 	@GetMapping("/{produtoId}")
 	public ProdutoDTO findById(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
 		var produto = cadastroProdutoService.findById(produtoId, restauranteId);
-		return produtoDTOAssembler.toDTO(produto);
+		return produtoDTOAssembler.toModel(produto);
 	}
 
 	@Override
@@ -62,7 +64,7 @@ public class RestauranteProdutosController implements RestauranteProdutoControll
 	public ProdutoDTO add(@PathVariable Long restauranteId, @RequestBody @Valid ProdutoInputDTO dto) {
 		var produto = produtoDTODisassembler.toDomainObject(dto);
 		var produtoBD = cadastroRestauranteService.associarProduto(restauranteId, produto);
-		return produtoDTOAssembler.toDTO(produtoBD);
+		return produtoDTOAssembler.toModel(produtoBD);
 	}
 	
 	@Override
@@ -70,7 +72,7 @@ public class RestauranteProdutosController implements RestauranteProdutoControll
 	public ProdutoDTO update(@PathVariable Long restauranteId, @PathVariable Long produtoId, @RequestBody @Valid ProdutoInputDTO dto) {
 		var produto = cadastroProdutoService.findById(produtoId, restauranteId);
 		produtoDTODisassembler.copyProperties(dto, produto);
-		return produtoDTOAssembler.toDTO(cadastroProdutoService.update(produto));
+		return produtoDTOAssembler.toModel(cadastroProdutoService.update(produto));
 	}
 
 }

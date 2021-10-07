@@ -1,11 +1,12 @@
 package com.algaworks.algafood.api.controller;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.algaworks.algafood.api.AlgaLinks;
 import com.algaworks.algafood.api.assembler.GrupoDTOAssembler;
 import com.algaworks.algafood.api.controller.openapi.UserGruposControllerOpenApi;
 import com.algaworks.algafood.api.model.GrupoDTO;
@@ -32,11 +34,16 @@ public class UsuariosGruposController implements UserGruposControllerOpenApi {
 	@Autowired
 	private GrupoDTOAssembler grupoDTOAssembler;
 	
+	@Autowired
+	private AlgaLinks algaLinks;
+	
 	@Override
 	@GetMapping
-	public List<GrupoDTO> findAll(@PathVariable Long usuarioId) {
+	public CollectionModel<GrupoDTO> findAll(@PathVariable Long usuarioId) {
 		var usuario = cadastroUsuarioService.findById(usuarioId);
-		return grupoDTOAssembler.toCollectionDTO(usuario.getGrupos());
+		var dtos = grupoDTOAssembler.toCollectionModelGruposUser(usuario.getGrupos(), usuarioId);
+		dtos.getContent().forEach(g -> g.add(algaLinks.linkToDesassociarGrupoUser(usuarioId, g.getId(), "desassociar")));
+		return dtos;
 	}
 	 
 	@Override
@@ -47,21 +54,23 @@ public class UsuariosGruposController implements UserGruposControllerOpenApi {
 		if (grupoOP.isEmpty()) {
 			throw new GrupoNotFoundException(grupoId);
 		}
-		return grupoDTOAssembler.toDTO(grupoOP.get());
+		return grupoDTOAssembler.toModel(grupoOP.get());
 	}
 	
 	@Override
 	@PutMapping("/{grupoId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void addGrupo(@PathVariable Long usuarioId, @PathVariable Long grupoId) {
+	public ResponseEntity<Void> addGrupo(@PathVariable Long usuarioId, @PathVariable Long grupoId) {
 		cadastroUsuarioService.addGrupo(usuarioId, grupoId);
+		return ResponseEntity.noContent().build();
 	}
 	
 	@Override
 	@DeleteMapping("/{grupoId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void removeGrupo(@PathVariable Long usuarioId, @PathVariable Long grupoId) {
+	public ResponseEntity<Void> removeGrupo(@PathVariable Long usuarioId, @PathVariable Long grupoId) {
 		cadastroUsuarioService.removeGrupo(usuarioId, grupoId);
+		return ResponseEntity.noContent().build();
 	}
 
 }

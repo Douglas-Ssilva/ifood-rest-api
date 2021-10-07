@@ -15,8 +15,10 @@ public class VendaDiariaDTO {
 	
 	@ApiModelProperty(example = "2021-08-13")
 	private Date data;//VendaQueryServiceImpl.consultarVendas função de truncar data não retorna um LocalDate
+	
 	@ApiModelProperty(example = "10")
 	private Long totalVendas;
+	
 	@ApiModelProperty(example = "109.00")
 	private BigDecimal totalFaturado;
 

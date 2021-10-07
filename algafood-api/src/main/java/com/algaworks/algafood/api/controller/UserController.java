@@ -1,10 +1,9 @@
 package com.algaworks.algafood.api.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,14 +40,14 @@ public class UserController implements UserControllerOpenApi {
 	
 	@Override
 	@GetMapping
-	public List<UsuarioDTO> findAll(){
-		return usuarioDTOAssembler.toCollectionDTO(cadastroUsuarioService.findAll());
+	public CollectionModel<UsuarioDTO> findAll(){
+		return usuarioDTOAssembler.toCollectionModelUsuarios(cadastroUsuarioService.findAll());
 	}
 	
 	@Override
 	@GetMapping("/{userId}")
 	public UsuarioDTO findById(@PathVariable Long userId){
-		return usuarioDTOAssembler.toDTO(cadastroUsuarioService.findById(userId));
+		return usuarioDTOAssembler.toModel(cadastroUsuarioService.findById(userId));
 	}
 	
 	@Override
@@ -56,7 +55,7 @@ public class UserController implements UserControllerOpenApi {
 	@ResponseStatus(HttpStatus.CREATED)
 	public UsuarioDTO add(@RequestBody @Valid UsuarioInputDTO dto) {
 		var usuario = usuarioInputDTODisassembler.toDomainObject(dto);
-		return usuarioDTOAssembler.toDTO(cadastroUsuarioService.merge(usuario));
+		return usuarioDTOAssembler.toModel(cadastroUsuarioService.merge(usuario));
 	}
 	
 	@Override
@@ -64,7 +63,7 @@ public class UserController implements UserControllerOpenApi {
 	public UsuarioDTO update(@RequestBody @Valid UsuarioInputSemSenhaDTO dto, @PathVariable Long userId) {
 		var usuario = cadastroUsuarioService.findById(userId);
 		usuarioInputDTODisassembler.copyProperties(dto, usuario);
-		return usuarioDTOAssembler.toDTO(cadastroUsuarioService.merge(usuario));
+		return usuarioDTOAssembler.toModel(cadastroUsuarioService.merge(usuario));
 	}
 	
 	@Override

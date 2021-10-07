@@ -1,28 +1,46 @@
 package com.algaworks.algafood.api.assembler;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
+import com.algaworks.algafood.api.AlgaLinks;
+import com.algaworks.algafood.api.controller.UserController;
 import com.algaworks.algafood.api.model.UsuarioDTO;
 import com.algaworks.algafood.domain.model.Usuario;
 
 @Component
-public class UsuarioDTOAssembler {
+public class UsuarioDTOAssembler extends RepresentationModelAssemblerSupport<Usuario, UsuarioDTO> {
 	
 	@Autowired
 	private ModelMapper mapper;
 	
-	public UsuarioDTO toDTO(Usuario user) {
-		return mapper.map(user, UsuarioDTO.class);
+	@Autowired
+	private AlgaLinks algaLinks;
+	
+	public UsuarioDTOAssembler() {
+		super(UserController.class, UsuarioDTO.class);
 	}
 	
-	public List<UsuarioDTO> toCollectionDTO(Collection<Usuario> users) {
-		return users.stream().map(this::toDTO).collect(Collectors.toList());
+	@Override
+	public UsuarioDTO toModel(Usuario user) {
+		var userWithSelRel = createModelWithId(user.getId(), user);
+		mapper.map(user, userWithSelRel);
+		userWithSelRel.add(algaLinks.linkToUsuarios("usuarios"));
+		userWithSelRel.add(algaLinks.linkToUserGroup(userWithSelRel.getId(), "grupos-user"));
+		return userWithSelRel;
+	}
+	
+	public CollectionModel<UsuarioDTO> toCollectionModelUsuarios(Iterable<? extends Usuario> entities) {
+		return toCollectionModel(entities).add(algaLinks.linkToUsuarios());
+	}
+	
+	public CollectionModel<UsuarioDTO> toCollectionModelResponsaveisRestaurante(Iterable<? extends Usuario> entities, Long restauranteId) {
+		return toCollectionModel(entities)
+				.add(algaLinks.linkToResposaveisRestaurante(restauranteId))
+				.add(algaLinks.linkToAssociacaoRestauranteResponsavel(restauranteId, "associar"));
 	}
 
 }

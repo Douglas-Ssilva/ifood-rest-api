@@ -9,18 +9,39 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Links;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.algaworks.algafood.api.controller.openapi.model.PageCozinhaDTOOpenApi;
 import com.algaworks.algafood.api.controller.openapi.model.PagePedidoDTOOpenApi;
 import com.algaworks.algafood.api.controller.openapi.model.PageableRequestOpenApi;
 import com.algaworks.algafood.api.exceptionhandler.Problem;
+import com.algaworks.algafood.api.model.CidadeDTO;
 import com.algaworks.algafood.api.model.CozinhaDTO;
+import com.algaworks.algafood.api.model.EstadoDTO;
+import com.algaworks.algafood.api.model.FormaPagamentoDTO;
+import com.algaworks.algafood.api.model.GrupoDTO;
 import com.algaworks.algafood.api.model.PedidoResumoDTO;
+import com.algaworks.algafood.api.model.PermissaoDTO;
+import com.algaworks.algafood.api.model.ProdutoDTO;
+import com.algaworks.algafood.api.model.RestauranteDTOResumoList;
+import com.algaworks.algafood.api.model.UsuarioDTO;
+import com.algaworks.algafood.core.springfox.adapter.CidadesOpenApi;
+import com.algaworks.algafood.core.springfox.adapter.CozinhasOpenApi;
+import com.algaworks.algafood.core.springfox.adapter.EstadosOpenApi;
+import com.algaworks.algafood.core.springfox.adapter.FormasPagamentoOpenApi;
+import com.algaworks.algafood.core.springfox.adapter.GruposOpenApi;
+import com.algaworks.algafood.core.springfox.adapter.LinkOpenApi;
+import com.algaworks.algafood.core.springfox.adapter.PedidosOpenApi;
+import com.algaworks.algafood.core.springfox.adapter.PermissoesOpenApi;
+import com.algaworks.algafood.core.springfox.adapter.ProdutosOpenApi;
+import com.algaworks.algafood.core.springfox.adapter.RestaurantesOpenApi;
+import com.algaworks.algafood.core.springfox.adapter.UsuariosOpenApi;
 import com.fasterxml.classmate.TypeResolver;
 
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
@@ -65,8 +86,18 @@ public class SpringFoxConfig implements WebMvcConfigurer {
 				.globalResponseMessage(RequestMethod.DELETE, globalDeleteResponseMessages())
 				.globalResponseMessage(RequestMethod.POST, globalPostResponseMessages())
 				.directModelSubstitute(Pageable.class, PageableRequestOpenApi.class)//alterando somente para fins de doc
-				.alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(Page.class, CozinhaDTO.class), PageCozinhaDTOOpenApi.class))
+				.directModelSubstitute(Links.class, LinkOpenApi.class)
+				.alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(PagedModel.class, CozinhaDTO.class), CozinhasOpenApi.class))
+				.alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(PagedModel.class, PedidoResumoDTO.class), PedidosOpenApi.class))
 				.alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(Page.class, PedidoResumoDTO.class), PagePedidoDTOOpenApi.class))
+				.alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(CollectionModel.class, CidadeDTO.class), CidadesOpenApi.class))
+				.alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(CollectionModel.class, EstadoDTO.class), EstadosOpenApi.class))
+				.alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(CollectionModel.class, FormaPagamentoDTO.class), FormasPagamentoOpenApi.class))
+				.alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(CollectionModel.class, GrupoDTO.class), GruposOpenApi.class))
+				.alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(CollectionModel.class, PermissaoDTO.class), PermissoesOpenApi.class))
+				.alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(CollectionModel.class, ProdutoDTO.class), ProdutosOpenApi.class))
+				.alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(CollectionModel.class, RestauranteDTOResumoList.class), RestaurantesOpenApi.class))
+				.alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(CollectionModel.class, UsuarioDTO.class), UsuariosOpenApi.class))
 				.ignoredParameterTypes(ServletWebRequest.class, Optional.class)//estava aparecendo na doc
 				//Adicionando parametros do Sqquigly que não aparece na doc(config global)
 //				.globalOperationParameters(Arrays.asList(
@@ -111,6 +142,7 @@ public class SpringFoxConfig implements WebMvcConfigurer {
 				new Tag("Pedidos", "Gerencia pedidos"),
 				new Tag("Produtos", "Gerencia produtos"),
 				new Tag("Restaurantes", "Gerencia os restaurantes"),
+				new Tag("Permissões", "Gerencia as permissões"),
 				new Tag("Usuários", "Gerencia os clientes")).toArray(new Tag[0]);
 				
 	}

@@ -1,8 +1,8 @@
 package com.algaworks.algafood.api.controller.openapi;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.hateoas.PagedModel;
 
 import com.algaworks.algafood.api.exceptionhandler.Problem;
 import com.algaworks.algafood.api.model.PedidoDTO;
@@ -26,7 +26,7 @@ public interface PedidosControllerOpenApi {
 				type = "string", paramType = "query", example = "nomeCliente,codigo")
 	})
 	@ApiOperation("Lista todos pedidos")
-	public Page<PedidoResumoDTO> pesquisar(PedidoFilter filter, @PageableDefault(size = 2) Pageable pageable);
+	PagedModel<PedidoResumoDTO> pesquisar(PedidoFilter filter, @PageableDefault(size = 2) Pageable pageable);
 
 	@ApiImplicitParams({
 		@ApiImplicitParam(value = "Nomes das propriedades para filtrar na resposta.", name = "campos", 
@@ -36,12 +36,12 @@ public interface PedidosControllerOpenApi {
 	@ApiResponses({
 		@ApiResponse(code = 404, message = "Pedido não encontrado", response = Problem.class),
 	})
-	public PedidoDTO findById(@ApiParam(value = "Código do pedido", example = "787c2598-574b-4db0-b611-948aeb0b5357", required = true) String pedidoCodigo);
+	PedidoDTO findById(@ApiParam(value = "Código do pedido", example = "787c2598-574b-4db0-b611-948aeb0b5357", required = true) String pedidoCodigo);
 	
 	@ApiOperation("Emite pedido")
 	@ApiResponses({
 		@ApiResponse(code = 201, message = "Pedido emitido com sucesso")
 	})
-	public PedidoDTO emitirPedido(@ApiParam(value = "Corpo com a representação para emitir pedidos", name = "pedidoDTO" ) PedidoInputDTO dto);
+	PedidoDTO emitirPedido(@ApiParam(value = "Corpo com a representação para emitir pedidos", name = "pedidoDTO" ) PedidoInputDTO dto);
 
 }

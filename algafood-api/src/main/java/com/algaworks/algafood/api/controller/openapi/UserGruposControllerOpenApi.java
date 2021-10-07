@@ -1,6 +1,7 @@
 package com.algaworks.algafood.api.controller.openapi;
 
-import java.util.List;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.ResponseEntity;
 
 import com.algaworks.algafood.api.exceptionhandler.Problem;
 import com.algaworks.algafood.api.model.GrupoDTO;
@@ -19,7 +20,7 @@ public interface UserGruposControllerOpenApi {
 		@ApiResponse(code = 404, message = "Recurso não encontrado", response = Problem.class),
 		@ApiResponse(code = 400, message = "ID do usuário com formato inválido", response = Problem.class)
 	})
-	List<GrupoDTO> findAll(@ApiParam(value = "Id do usuário", example = "1", required = true) Long usuarioId);
+	CollectionModel<GrupoDTO> findAll(@ApiParam(value = "Id do usuário", example = "1", required = true) Long usuarioId);
 	
 	@ApiOperation("Busca grupo por ID do usuário")
 	@ApiResponses({
@@ -35,7 +36,7 @@ public interface UserGruposControllerOpenApi {
 		@ApiResponse(code = 404, message = "Recurso não encontrado", response = Problem.class),
 		@ApiResponse(code = 400, message = "ID do usuário ou grupo com formato inválido", response = Problem.class)
 	})
-	void addGrupo(@ApiParam(value = "Id do usuário", example = "1", required = true) Long usuarioId, 
+	ResponseEntity<Void> addGrupo(@ApiParam(value = "Id do usuário", example = "1", required = true) Long usuarioId, 
 			@ApiParam(value = "Id do grupo", example = "1", required = true) Long grupoId);
 	
 	@ApiOperation("Desassocia grupo do usuário")
@@ -44,7 +45,7 @@ public interface UserGruposControllerOpenApi {
 		@ApiResponse(code = 404, message = "Recurso não encontrado", response = Problem.class),
 		@ApiResponse(code = 400, message = "ID do usuário ou grupo com formato inválido", response = Problem.class)
 	})
-	void removeGrupo(@ApiParam(value = "Id do usuário", example = "1", required = true) Long usuarioId, 
+	ResponseEntity<Void> removeGrupo(@ApiParam(value = "Id do usuário", example = "1", required = true) Long usuarioId, 
 			@ApiParam(value = "Id do grupo", example = "1", required = true) Long grupoId);
 
 }

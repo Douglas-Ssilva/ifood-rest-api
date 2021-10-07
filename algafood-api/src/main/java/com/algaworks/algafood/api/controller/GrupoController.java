@@ -1,10 +1,9 @@
 package com.algaworks.algafood.api.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,14 +38,14 @@ public class GrupoController implements GruposControllerOpenApi {
 	
 	@Override
 	@GetMapping
-	public List<GrupoDTO> findAll(){
-		return grupoDTOAssembler.toCollectionDTO(cadastroGrupoService.findAll());
+	public CollectionModel<GrupoDTO> findAll(){
+		return grupoDTOAssembler.toCollectionModel(cadastroGrupoService.findAll());
 	}
 	
 	@Override
 	@GetMapping("/{grupoId}")
 	public GrupoDTO findById(@PathVariable Long grupoId){ 
-		return grupoDTOAssembler.toDTO(cadastroGrupoService.findById(grupoId));
+		return grupoDTOAssembler.toModel(cadastroGrupoService.findById(grupoId));
 	}
 	
 	@Override
@@ -54,7 +53,7 @@ public class GrupoController implements GruposControllerOpenApi {
 	@ResponseStatus(HttpStatus.CREATED)
 	public GrupoDTO add(@RequestBody @Valid GrupoInputDTO dto) {
 		var grupo = grupoInputDTODisassembler.toDomainObject(dto);
-		return grupoDTOAssembler.toDTO(cadastroGrupoService.merge(grupo));
+		return grupoDTOAssembler.toModel(cadastroGrupoService.merge(grupo));
 	}
 	
 	@Override
@@ -62,7 +61,7 @@ public class GrupoController implements GruposControllerOpenApi {
 	public GrupoDTO update(@RequestBody @Valid GrupoInputDTO dto, @PathVariable Long grupoId) {
 		var grupo = cadastroGrupoService.findById(grupoId);
 		grupoInputDTODisassembler.copyProperties(dto, grupo);
-		return grupoDTOAssembler.toDTO(cadastroGrupoService.merge(grupo));
+		return grupoDTOAssembler.toModel(cadastroGrupoService.merge(grupo));
 	}
 	
 	@Override

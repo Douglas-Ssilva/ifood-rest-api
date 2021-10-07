@@ -1,6 +1,7 @@
 package com.algaworks.algafood.api.controller.openapi;
 
-import java.util.List;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.ResponseEntity;
 
 import com.algaworks.algafood.api.exceptionhandler.Problem;
 import com.algaworks.algafood.api.model.UsuarioDTO;
@@ -19,14 +20,14 @@ public interface RestauranteUsuariosControllerOpenApi {
 		@ApiResponse(code = 404, message = "Recurso não encontrado", response = Problem.class),
 		@ApiResponse(code = 400, message = "ID do restaurante com formato inválido", response = Problem.class),
 	})
-	List<UsuarioDTO> findAll(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId);
+	CollectionModel<UsuarioDTO> findAll(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId);
 	
 	@ApiOperation("Desassociação de restaurante com usuário responsável")
 	@ApiResponses({
 		@ApiResponse(code = 204, message = "Desassociação realizada com sucesso"),
 		@ApiResponse(code = 404, message = "Recurso não encontrado", response = Problem.class)
 	})
-	void desassiociar(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId, 
+	ResponseEntity<Void> desassiociar(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId, 
 			@ApiParam(value = "Id do usuário", example = "1", required = true) Long usuarioId);
 	
 	@ApiOperation("Associação de restaurante com usuário responsável")
@@ -34,6 +35,6 @@ public interface RestauranteUsuariosControllerOpenApi {
 		@ApiResponse(code = 204, message = "Associação realizada com sucesso"),
 		@ApiResponse(code = 404, message = "Recurso não encontrado", response = Problem.class)
 	})
-	void associar(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId, 
+	ResponseEntity<Void> associar(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId, 
 			@ApiParam(value = "Id do usuário", example = "1", required = true) Long usuarioId);
 }

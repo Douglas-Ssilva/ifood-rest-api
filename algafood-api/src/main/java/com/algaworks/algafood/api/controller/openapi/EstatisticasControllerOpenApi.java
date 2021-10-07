@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.algaworks.algafood.api.controller.EstatisticasController.EstatisticasDTO;
 import com.algaworks.algafood.domain.model.dto.VendaDiariaDTO;
 import com.algaworks.algafood.domain.model.filter.VendasDiariasFilter;
 
@@ -16,6 +17,9 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "Estatísticas")
 public interface EstatisticasControllerOpenApi {
 
+	@ApiOperation(value = "Estatísticas", hidden = true)
+	EstatisticasDTO estatisticas();
+	
 	@ApiOperation("Busca vendas diárias")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "restauranteId", value = "Id do restaurante", example = "1", dataType = "int"),

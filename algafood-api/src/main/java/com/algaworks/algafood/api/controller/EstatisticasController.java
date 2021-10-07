@@ -3,6 +3,7 @@ package com.algaworks.algafood.api.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.algaworks.algafood.api.AlgaLinks;
 import com.algaworks.algafood.api.controller.openapi.EstatisticasControllerOpenApi;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.exception.RestauranteNotFoundException;
@@ -24,6 +26,8 @@ import com.algaworks.algafood.domain.service.VendaQueryService;
 @RequestMapping(path = "/estatisticas")
 public class EstatisticasController implements EstatisticasControllerOpenApi {
 	
+	public static class EstatisticasDTO extends RepresentationModel<EstatisticasDTO> {}
+	
 	@Autowired
 	private VendaQueryService vendaQueryService;
 	
@@ -32,6 +36,17 @@ public class EstatisticasController implements EstatisticasControllerOpenApi {
 	
 	@Autowired
 	private VendaDiariaReportService vendaReportService;
+	
+	@Autowired
+	private AlgaLinks algaLinks;
+	
+	@Override
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	public EstatisticasDTO estatisticas() {
+	    var estatisticasModel = new EstatisticasDTO();
+	    estatisticasModel.add(algaLinks.linkToVendasDiarias("vendas-diarias"));
+	    return estatisticasModel;
+	}
 	
 	@Override
 	@GetMapping(path = "/vendas-diarias",  produces = MediaType.APPLICATION_JSON_VALUE)//como esse DTO é somente para consultas, não vejo problemas ela está no pacote domain e retornamos aqui 

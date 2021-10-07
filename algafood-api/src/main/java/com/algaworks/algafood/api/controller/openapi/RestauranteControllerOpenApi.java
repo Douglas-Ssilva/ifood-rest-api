@@ -5,12 +5,15 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.algaworks.algafood.api.controller.openapi.model.RestauranteDTOOpenApi;
 import com.algaworks.algafood.api.exceptionhandler.Problem;
 import com.algaworks.algafood.api.model.RestauranteDTO;
+import com.algaworks.algafood.api.model.RestauranteDTOResumo;
+import com.algaworks.algafood.api.model.RestauranteDTOResumoList;
 import com.algaworks.algafood.api.model.input.RestauranteInputDTO;
 
 import io.swagger.annotations.Api;
@@ -20,25 +23,27 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Api(tags = "Restaurantes")
 public interface RestauranteControllerOpenApi {
 	
-	@ApiOperation(value = "Lista todos restaurantes", response = RestauranteDTOOpenApi.class, hidden = false)
+	@ApiOperation(value = "Lista todos restaurantes", hidden = false)
 	@ApiImplicitParams({
 		@ApiImplicitParam(paramType = "query", type = "string", name = "projecao", allowableValues = "apenas-nome", value = "Listar apenas por nome")
 	})
-	List<RestauranteDTO> findAll();
+	CollectionModel<RestauranteDTOResumoList> findAll();
 	
+	@ApiIgnore//ainda que esteja com hidden true, esse tipo aparece no modelo de representação. Nos exemplos exibimos RestauranteDTOResumoList, e RestauranteDTOResumoList é um resumo
 	@ApiOperation(value = "Lista todos restaurantes", hidden = true)
-	List<RestauranteDTO> findAllApenasNome();
+	CollectionModel<RestauranteDTOResumo> findAllApenasNome();
 
 	@ApiOperation("Busca restaurante por ID")
 	@ApiResponses({
 		@ApiResponse(code = 404, message = "Restaurante não encontrado", response = Problem.class),
 		@ApiResponse(code = 400, message = "ID com formato inválido", response = Problem.class),
 	})
-	public RestauranteDTO findById(@ApiParam(value = "Id do restaurante", example = "1", required = true)  Long restauranteId);
+	RestauranteDTO findById(@ApiParam(value = "Id do restaurante", example = "1", required = true)  Long restauranteId);
 
 	@ApiOperation("Cria restaurante")
 	@ApiResponses({
@@ -51,7 +56,7 @@ public interface RestauranteControllerOpenApi {
 		@ApiResponse(code = 204, message = "Restaurante excluído"),
 	})
 	@ApiOperation("Remove restaurante por ID")
-	void delete(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId);
+	ResponseEntity<Void> delete(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId);
 	
 	@ApiResponses({
 		@ApiResponse(code = 404, message = "Restaurante não encontrado", response = Problem.class),
@@ -66,7 +71,7 @@ public interface RestauranteControllerOpenApi {
 		@ApiResponse(code = 200, message = "Restaurante atualizado")
 	})
 	@ApiOperation("Atualiza restaurante por ID Patch")
-	public RestauranteDTO partialMerge(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId, 
+	RestauranteDTO partialMerge(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId, 
 			@ApiParam(name = "corpo", value = "Campos a serem atualizados", required = true) Map<String, Object> fieldsRestaurante, 
 			HttpServletRequest httpServletRequest);
 	
@@ -75,7 +80,7 @@ public interface RestauranteControllerOpenApi {
 		@ApiResponse(code = 204, message = "Restaurante ativado com sucesso")
 	})
 	@ApiOperation("Ativa restaurante por ID")
-	void ativar(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId);
+	ResponseEntity<Void> ativar(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId);
 	
 	@ApiResponses({
 		@ApiResponse(code = 404, message = "Restaurante não encontrado", response = Problem.class),
@@ -83,35 +88,35 @@ public interface RestauranteControllerOpenApi {
 	})
 	@ApiOperation("Ativa vários restaurantes por IDs")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	void ativarAll(@ApiParam(value = "Ids dos restaurants", example = "1,2", required = true) List<Long> ids);
+	ResponseEntity<Void> ativarAll(@ApiParam(value = "Ids dos restaurants", example = "1,2", required = true) List<Long> ids);
 	
 	@ApiResponses({
 		@ApiResponse(code = 404, message = "Restaurante não encontrado", response = Problem.class),
 		@ApiResponse(code = 204, message = "Restaurante desativado"),
 	})
 	@ApiOperation("Desativa restaurante por ID")
-	void desativar(@ApiParam(value = "Id do restaurante", example = "1", required = true)  Long restauranteId);
+	ResponseEntity<Void> desativar(@ApiParam(value = "Id do restaurante", example = "1", required = true)  Long restauranteId);
 	
 	@ApiResponses({
 		@ApiResponse(code = 404, message = "Restaurante não encontrado", response = Problem.class),
 		@ApiResponse(code = 204, message = "Restaurantes desativados"),
 	})
 	@ApiOperation("Desativa vários restaurantes por IDs")
-	void desativarAll(@ApiParam(value = "Ids dos restaurants", example = "[1,2]", required = true) List<Long> ids);
+	ResponseEntity<Void> desativarAll(@ApiParam(value = "Ids dos restaurants", example = "[1,2]", required = true) List<Long> ids);
 	
 	@ApiResponses({
 		@ApiResponse(code = 404, message = "Restaurante não encontrado", response = Problem.class),
 		@ApiResponse(code = 204, message = "Restaurante aberto com sucesso")
 	})
 	@ApiOperation("Abre restaurante por ID")
-	void abrir(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId);
+	ResponseEntity<Void> abrir(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId);
 	
 	@ApiResponses({
 		@ApiResponse(code = 404, message = "Restaurante não encontrado", response = Problem.class),
 		@ApiResponse(code = 204, message = "Restaurante fechado com sucesso")
 	})
 	@ApiOperation("Fecha restaurante por ID")
-	void fechar(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId);
+	ResponseEntity<Void> fechar(@ApiParam(value = "Id do restaurante", example = "1", required = true) Long restauranteId);
 	
 
 }

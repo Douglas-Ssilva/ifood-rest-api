@@ -1,6 +1,6 @@
 package com.algaworks.algafood.api.controller.openapi;
 
-import java.util.List;
+import org.springframework.hateoas.CollectionModel;
 
 import com.algaworks.algafood.api.exceptionhandler.Problem;
 import com.algaworks.algafood.api.model.CidadeDTO;
@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiResponses;
 public interface CidadeControllerOpenApi {
 	
 	@ApiOperation("Lista todas cidades")
-	List<CidadeDTO> findAll();
+	CollectionModel<CidadeDTO> findAll();
 	
 	@ApiResponses({
 		@ApiResponse(code = 404, message = "Cidade não encontrada", response = Problem.class),

@@ -1,7 +1,7 @@
 package com.algaworks.algafood.api.controller.openapi;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.PagedModel;
 
 import com.algaworks.algafood.api.exceptionhandler.Problem;
 import com.algaworks.algafood.api.model.CozinhaDTO;
@@ -17,7 +17,7 @@ import io.swagger.annotations.ApiResponses;
 public interface CozinhaControllerOpenApi {
 	
 	@ApiOperation("Lista todas cozinhas")
-	Page<CozinhaDTO> findAll(Pageable pageable);
+	PagedModel<CozinhaDTO> findAll(Pageable pageable);
 	
 	@ApiResponses({
 		@ApiResponse(code = 404, message = "Cozinha não encontrada", response = Problem.class),
@@ -52,6 +52,6 @@ public interface CozinhaControllerOpenApi {
 		@ApiResponse(code = 400, message = "Formato do nome inválido", response = Problem.class)
 	})
 	@ApiOperation("Lista as cozinhas por nome")
-	Page<CozinhaDTO> listarCozinhasPorNome(@ApiParam(name = "nome", value = "Nome da cozinha") String nome, Pageable pageable);
+	PagedModel<CozinhaDTO> listarCozinhasPorNome(@ApiParam(name = "nome", value = "Nome da cozinha") String nome, Pageable pageable);
 
 }

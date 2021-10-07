@@ -1,15 +1,15 @@
 package com.algaworks.algafood.api.controller;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +27,7 @@ import com.algaworks.algafood.api.controller.openapi.PedidosControllerOpenApi;
 import com.algaworks.algafood.api.model.PedidoDTO;
 import com.algaworks.algafood.api.model.PedidoResumoDTO;
 import com.algaworks.algafood.api.model.input.PedidoInputDTO;
+import com.algaworks.algafood.core.data.PageWrapper;
 import com.algaworks.algafood.core.data.PageableTranslator;
 import com.algaworks.algafood.domain.exception.EntityNotFoundException;
 import com.algaworks.algafood.domain.exception.NegocioException;
@@ -52,20 +53,23 @@ public class PedidoController implements PedidosControllerOpenApi {
 	@Autowired
 	private PedidoInputDTODisassembler pedidoInputDTODisassembler;
 	
+	@Autowired
+	private PagedResourcesAssembler<Pedido> pagedResourcesAssembler;
+	
 	//desenvolvimento:8080/pedidos?clienteId=1&restauranteId=1&dataCriacaoInicio=2021-08-14T10:09:33Z&dataCriacaoFim=2021-08-15T20:09:33Z
 	@Override
 	@GetMapping
-	public Page<PedidoResumoDTO> pesquisar(PedidoFilter filter, @PageableDefault(size = 2) Pageable pageable) { //Spring faz a injeção do filtro sem anotar com nada
-		pageable = handlePageable(pageable);
-		Page<Pedido> pedidosPage = cadastroPedidoService.findAll(PedidoSpecs.usandoFiltro(filter), pageable);
-		List<PedidoResumoDTO> pedidos = pedidoResumoDTOAssembler.toCollectionDTO(pedidosPage.getContent());
-		return new PageImpl<>(pedidos, pageable, pedidosPage.getTotalElements());
+	public PagedModel<PedidoResumoDTO> pesquisar(PedidoFilter filter, @PageableDefault(size = 2) Pageable pageable) { //Spring faz a injeção do filtro sem anotar com nada
+		var pageableTranslator = handlePageable(pageable);
+		Page<Pedido> pedidosPage = cadastroPedidoService.findAll(PedidoSpecs.usandoFiltro(filter), pageableTranslator);
+		PageWrapper<Pedido> pageWrapper = new PageWrapper<>(pedidosPage, pageable);
+		return pagedResourcesAssembler.toModel(pageWrapper, pedidoResumoDTOAssembler);
 	}
 
 	@Override
 	@GetMapping("/{pedidoCodigo}")
 	public PedidoDTO findById(@PathVariable String pedidoCodigo) {
-		return pedidoDTOAssembler.toDTO(cadastroPedidoService.findByCodigo(pedidoCodigo));
+		return pedidoDTOAssembler.toModel(cadastroPedidoService.findByCodigo(pedidoCodigo));
 	}
 	
 	@Override
@@ -75,7 +79,7 @@ public class PedidoController implements PedidosControllerOpenApi {
 		var pedido = pedidoInputDTODisassembler.toDomainObject(dto);
 		
 		try {
-			return pedidoDTOAssembler.toDTO(cadastroPedidoService.emitirPedido(pedido));
+			return pedidoDTOAssembler.toModel(cadastroPedidoService.emitirPedido(pedido));
 		} catch (EntityNotFoundException e) {
 			throw new NegocioException(e.getMessage(), e);
 		}
@@ -90,7 +94,7 @@ public class PedidoController implements PedidosControllerOpenApi {
 				"nomeCliente", "cliente.nome",
 				"codigo", "codigo",
 				"taxaFrete", "taxaFrete",
-				"restaurante.nome", "restaurante.nome",
+				"nomerestaurante", "restaurante.nome",
 				"dataCriacao", "dataCriacao");
 		return PageableTranslator.translator(mapeamento, pageable);
 	}

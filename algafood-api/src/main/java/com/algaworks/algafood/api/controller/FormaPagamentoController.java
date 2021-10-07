@@ -1,11 +1,11 @@
 package com.algaworks.algafood.api.controller;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -46,7 +46,7 @@ public class FormaPagamentoController implements FormaPagamentoControllerOpenApi
 	
 	@Override
 	@GetMapping
-	public ResponseEntity<List<FormaPagamentoDTO>> findAll(ServletWebRequest request){
+	public ResponseEntity<CollectionModel<FormaPagamentoDTO>> findAll(ServletWebRequest request){
 		ShallowEtagHeaderFilter.disableContentCaching(request.getRequest()); //desabilitando o Shallow pra esse método
 		var etag = VALUE_DEFAULT_IF_TABLE_EMPTY;
 		var date = cadastroFormaPagamentoService.findLastUpdateDate();
@@ -56,7 +56,8 @@ public class FormaPagamentoController implements FormaPagamentoControllerOpenApi
 		if (request.checkNotModified(etag)) {
 			return null;
 		}
-		var dtos = formaPagamentoDTOAssembler.toCollectionDTO(cadastroFormaPagamentoService.findBySituacao());
+		var dtos = formaPagamentoDTOAssembler.toCollectionModel(cadastroFormaPagamentoService.findBySituacao());
+		
 		return ResponseEntity.ok()
 				.cacheControl(CacheControl.maxAge(30, TimeUnit.SECONDS))
 				.eTag(etag)
@@ -74,7 +75,7 @@ public class FormaPagamentoController implements FormaPagamentoControllerOpenApi
 		if (request.checkNotModified(etag)) {
 			return null;
 		}
-		var dto = formaPagamentoDTOAssembler.toDTO(cadastroFormaPagamentoService.findById(formaPagamentoId));
+		var dto = formaPagamentoDTOAssembler.toModel(cadastroFormaPagamentoService.findById(formaPagamentoId));
 		return ResponseEntity.ok()
 				.cacheControl(CacheControl.maxAge(30, TimeUnit.SECONDS))
 				.eTag(etag)
@@ -86,7 +87,7 @@ public class FormaPagamentoController implements FormaPagamentoControllerOpenApi
 	@ResponseStatus(HttpStatus.CREATED)
 	public FormaPagamentoDTO add(@RequestBody @Valid FormaPagamentoInputDTO formaPagamentoInputDTO) {
 		var formaPagamento = formaPagamentoInputDTODisassembler.toDomainObject(formaPagamentoInputDTO);
-		return formaPagamentoDTOAssembler.toDTO(cadastroFormaPagamentoService.merge(formaPagamento));
+		return formaPagamentoDTOAssembler.toModel(cadastroFormaPagamentoService.merge(formaPagamento));
 	}
 	
 	@Override
@@ -101,7 +102,7 @@ public class FormaPagamentoController implements FormaPagamentoControllerOpenApi
 	public FormaPagamentoDTO update(@RequestBody @Valid FormaPagamentoInputDTO dto, @PathVariable Long formaPagamentoId) {
 		var formaPagamento = cadastroFormaPagamentoService.findById(formaPagamentoId);
 		formaPagamentoInputDTODisassembler.copyProperties(dto, formaPagamento);
-		return formaPagamentoDTOAssembler.toDTO(cadastroFormaPagamentoService.merge(formaPagamento));
+		return formaPagamentoDTOAssembler.toModel(cadastroFormaPagamentoService.merge(formaPagamento));
 	}
 	
 

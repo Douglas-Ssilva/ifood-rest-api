@@ -1,10 +1,9 @@
 package com.algaworks.algafood.api.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,14 +42,14 @@ public class EstadoController implements EstadoControllerOpenApi {
 	
 	@Override
 	@GetMapping
-	public List<EstadoDTO> findAll() {
-		return estadoDTOAssembler.toCollectionDTO(estadoRepository.findAll());
+	public CollectionModel<EstadoDTO> findAll() {
+		return estadoDTOAssembler.toCollectionModel(estadoRepository.findAll());
 	}
 	
 	@Override
 	@GetMapping("/{estadoId}")
 	public EstadoDTO findById(@PathVariable Long estadoId) {
-		return estadoDTOAssembler.toDTO(cadastroEstadoService.buscar(estadoId));
+		return estadoDTOAssembler.toModel(cadastroEstadoService.buscar(estadoId));
 	}
 	
 	@Override
@@ -58,7 +57,7 @@ public class EstadoController implements EstadoControllerOpenApi {
 	@ResponseStatus(HttpStatus.CREATED)
 	public EstadoDTO save(@RequestBody @Valid EstadoInputDTO estadoInputDTO) {
 		var estado = estadoInputDTODisassembler.toDomainObject(estadoInputDTO);
-		return estadoDTOAssembler.toDTO(cadastroEstadoService.save(estado));
+		return estadoDTOAssembler.toModel(cadastroEstadoService.save(estado));
 	}
 	
 	@Override
@@ -66,7 +65,7 @@ public class EstadoController implements EstadoControllerOpenApi {
 	public EstadoDTO update(@PathVariable Long estadoId, @RequestBody @Valid EstadoInputDTO estadoInputDTO) {
 		var estadoBD = cadastroEstadoService.buscar(estadoId);
 		estadoInputDTODisassembler.copyProperties(estadoInputDTO, estadoBD);
-		return estadoDTOAssembler.toDTO(cadastroEstadoService.save(estadoBD));
+		return estadoDTOAssembler.toModel(cadastroEstadoService.save(estadoBD));
 	}
 	
 	@Override
